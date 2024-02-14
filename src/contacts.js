@@ -17,12 +17,14 @@ async function getContactById(contactId) {
 
 async function removeContact(contactId) {
   const contacts = await listContacts();
-  const removedContact = contacts.find((contact) => contact.id === contactId);
-  await fs.writeFile(contacts, JSON.stringify(contacts, null, 2));
-  return removedContact || null;
+  const index = contacts.findIndex((item) => item.id === contactId);
+  if (index === -1) return null;
+  const [removedContact] = contacts.splice(index, 1);
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  return removedContact;
 }
 
-async function addContact(name, email, phone) {
+async function addContact({ name, email, phone }) {
   const contacts = await listContacts();
   const newContact = { name, email, phone, id: nanoid() };
   contacts.push(newContact);
